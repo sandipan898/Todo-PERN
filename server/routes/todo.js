@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
             "INSERT INTO todo(description) VALUES($1) RETURNING *", 
             [description]
         )
-        res.status(200).json({ success: true, message: "Todo created successfully", data: newTodo.rows[0] })
+        res.status(200).json({ success: true, message: "Todo created successfully", todo: newTodo.rows[0] })
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const allTodos = await pool.query("SELECT * FROM todo");
-        res.status(200).json({ success: true, message: "Todos fetched successfully!", data: allTodos.rows});
+        res.status(200).json({ success: true, message: "Todos fetched successfully!", todo: allTodos.rows});
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -34,7 +34,7 @@ router.get("/:id", async (req, res) => {
             "SELECT * FROM todo WHERE todo_id=$1", 
             [id]
         );
-        res.status(200).json({success: true, message: "Todo fetched successfully!", data: foundTodo.rows[0]});
+        res.status(200).json({success: true, message: "Todo fetched successfully!", todo: foundTodo.rows[0]});
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -50,7 +50,7 @@ router.put("/:id", async (req, res) => {
             "UPDATE todo SET description=$1 WHERE todo_id=$2 RETURNING *",
             [description, id]
         );
-        res.status(200).json({success: true, message: "Todo updated successfully!", data: updatedTodo.rows[0] });
+        res.status(200).json({success: true, message: "Todo updated successfully!", todo: updatedTodo.rows[0] });
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -64,7 +64,7 @@ router.delete("/:id", async (req, res) => {
             "DELETE FROM todo WHERE todo_id=$1 RETURNING *",
             [id]
         )
-        res.status(200).json({success: true, message: "Todo deleted successfully!", data: deletedTodo.rows[0] })
+        res.status(200).json({success: true, message: "Todo deleted successfully!", todo: deletedTodo.rows[0] })
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }

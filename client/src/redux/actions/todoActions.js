@@ -4,7 +4,7 @@ import * as API from '../../api/api';
 export const getTodo = (id) => async (dispatch) => {
     try {
         const fetchedTodo = await API.getTodo(id);
-        dispatch({ type: types.GET, payload: fetchedTodo });
+        dispatch({ type: types.GET, payload: fetchedTodo.data });
     } catch (error) {
         console.log(error);
     }
@@ -13,7 +13,8 @@ export const getTodo = (id) => async (dispatch) => {
 export const getAllTodos = () => async (dispatch) => {
     try {
         const fetchedTodos = await API.getAllTodos();
-        dispatch({ type: types.GET_ALL, payload: fetchedTodos });
+        console.log(fetchedTodos)
+        dispatch({ type: types.GET_ALL, payload: fetchedTodos.data });
     } catch (error) {
         console.log(error);
     }
@@ -22,7 +23,7 @@ export const getAllTodos = () => async (dispatch) => {
 export const createTodo = (todoData) => async (dispatch) => {
     try {
         const createdTodo = await API.createTodo(todoData);
-        dispatch({ type: types.CREATE, payload: createdTodo });
+        dispatch({ type: types.CREATE, payload: createdTodo.data });
     } catch (error) {
         console.log(error);
     }
@@ -31,7 +32,7 @@ export const createTodo = (todoData) => async (dispatch) => {
 export const updateTodo = (id, todoData) => async (dispatch) => {
     try {
         const updatedTodo = await API.updateTodo(id, todoData);
-        dispatch({ type: types.UPDATE, payload: updatedTodo });
+        dispatch({ type: types.UPDATE, payload: updatedTodo.data });
     } catch (error) {
         console.log(error);
     }
@@ -40,7 +41,7 @@ export const updateTodo = (id, todoData) => async (dispatch) => {
 export const deleteTodo = (id) => async (dispatch) => {
     try {
         const deletedTodo = await API.deleteTodo(id);
-        dispatch({ type: types.DELETE, payload: deletedTodo });
+        dispatch({ type: types.DELETE, payload: deletedTodo.data });
     } catch (error) {
         console.log(error);
     }

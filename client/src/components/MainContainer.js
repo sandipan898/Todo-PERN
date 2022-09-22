@@ -1,44 +1,64 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createTodo, getAllTodos, getTodo } from "../redux/actions/todoActions";
+import { createTodo, deleteTodo, getAllTodos, getTodo, updateTodo } from "../redux/actions/todoActions";
 import TodoForm from "./TodoForm";
 import TodoTable from "./TodoTable";
 
 const initialTodo = {
-    description: ''
+  description: "",
 };
 
 const MainContainer = () => {
-    const [todo, setTodo] = useState(initialTodo);
+  const [todo, setTodo] = useState(initialTodo);
   const [todoId, setTodoId] = useState(null);
   const dispatch = useDispatch();
+  
+  useEffect(() => {
+    // if (todoId) {
+    //   // get todo call
+    //   dispatch(getTodo(todoId));
+    // } else {
+      dispatch(getAllTodos());
+    // }
+  }, []);
+
+  const fetchedTodo = useSelector((state) => state.todo);
+  console.log("fetchedTodo",fetchedTodo);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     // create todo call
-    dispatch(createTodo(todo));
+    if(todoId) {
+      dispatch(updateTodo(todoId, todo));
+    } else {
+      dispatch(createTodo(todo));
+    }
+    setTodo(initialTodo);
   };
 
-  useEffect(() => {
-    if(todoId) {
-      // get todo call
-        dispatch(getTodo(todoId));
-    } else {
-        dispatch(getAllTodos())
-    }
-  }, [todoId])
-  
+  const handleEdit = (id) => {
+    setTodoId(id);
+    setTodo(fetchedTodo.find(todo => todo.todo_id === id));
+  }
 
+  const handleDelete = (id) => {
+    dispatch(deleteTodo(id));
+  }
 
   return (
     <div style={{ margin: "2rem" }}>
-      <Grid container spacing={2}>
-        <Grid item sm={6} xs={12}>
-          <TodoTable todoId={todoId} setTodoId={setTodoId} />
+      <Grid container spacing={4}>
+        <Grid item sm={7} xs={12}>
+          <TodoTable rows={fetchedTodo} handleDelete={handleDelete} handleEdit={handleEdit} />
         </Grid>
-        <Grid item sm={6} xs={12}>
-          <TodoForm handleSubmit={handleSubmit} todoId={todoId} todo={todo} setTodo={setTodo} />
+        <Grid item sm={5} xs={12}>
+          <TodoForm
+            handleSubmit={handleSubmit}
+            todoId={todoId}
+            todo={todo}
+            setTodo={setTodo}
+          />
         </Grid>
       </Grid>
     </div>

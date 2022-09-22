@@ -1,19 +1,19 @@
 import React from 'react'
-import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useSelector } from 'react-redux';
 
-const TodoTable = ({ rows }) => {
-    const todos = useSelector(state => state.todos);
+const TodoTable = ({ rows, handleEdit, handleDelete }) => {
     return (
-        <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+        <TableContainer sx={{ maxHeight: 500 }} component={Paper} elevation={2}>
+            <Typography variant='h6' style={{ marginBottom: "1rem", paddingTop: "1rem" }} align="center">Your Todos</Typography>
+            <hr />
             <Table sx={{ minWidth: 650 }} stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Task Id</TableCell>
                         <TableCell align="left">Task Description</TableCell>
-                        <TableCell align="right">Action</TableCell>
+                        <TableCell align="center">Action</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -22,15 +22,18 @@ const TodoTable = ({ rows }) => {
                             key={row.todo_id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
+                            <TableCell component="th" scope="row" >
+                                {row.todo_id}
+                            </TableCell>
                             <TableCell component="th" scope="row">
                                 {row.description}
                             </TableCell>
-                            <TableCell>
-                                <IconButton aria-label="delete" size="large">
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                                <IconButton aria-label="delete" size="large">
+                            <TableCell align="center">
+                                <IconButton aria-label="delete" size="large" onClick={() => handleEdit(row.todo_id)}>
                                     <EditIcon fontSize="inherit" />
+                                </IconButton>
+                                <IconButton aria-label="delete" size="large" onClick={() => handleDelete(row.todo_id)}>
+                                    <DeleteIcon fontSize="inherit" />
                                 </IconButton>
                             </TableCell>
                         </TableRow>

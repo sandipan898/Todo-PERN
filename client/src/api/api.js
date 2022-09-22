@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const END_POINT = 'http://localhost:5000'
+const END_POINT = 'http://localhost:5000/api'
 const API = axios.create({ baseURL: END_POINT });
 
 export const getTodo = (id) => API.get(`/todos/${id}`);
