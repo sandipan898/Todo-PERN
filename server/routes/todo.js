@@ -1,14 +1,15 @@
 const router = require('express').Router();
-const { application } = require('express');
 const pool = require('../db');
 
 // CREATE
 router.post("/", async (req, res) => {
     const { description } = req.body;
+    const date = new Date();
+    const currentDate = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
     try{
         const newTodo = await pool.query(
-            "INSERT INTO todo(description) VALUES($1) RETURNING *", 
-            [description]
+            "INSERT INTO todo(description, createdAt) VALUES($1, $2) RETURNING *", 
+            [description, currentDate]
         )
         res.status(200).json({ success: true, message: "Todo created successfully", todo: newTodo.rows[0] })
     } catch (error) {
@@ -44,6 +45,7 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     const  { id } = req.params;
     const { description } = req.body;
+    const date = new Date();
 
     try {
         const updatedTodo = await pool.query(

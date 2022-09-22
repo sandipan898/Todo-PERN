@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createTodo, deleteTodo, getAllTodos, getTodo, updateTodo } from "../redux/actions/todoActions";
+import { createTodo, deleteTodo, getAllTodos, updateTodo } from "../redux/actions/todoActions";
 import TodoForm from "./TodoForm";
 import TodoTable from "./TodoTable";
 
@@ -12,19 +12,14 @@ const initialTodo = {
 const MainContainer = () => {
   const [todo, setTodo] = useState(initialTodo);
   const [todoId, setTodoId] = useState(null);
+  
   const dispatch = useDispatch();
   
   useEffect(() => {
-    // if (todoId) {
-    //   // get todo call
-    //   dispatch(getTodo(todoId));
-    // } else {
       dispatch(getAllTodos());
-    // }
-  }, []);
+  }, [dispatch]);
 
   const fetchedTodo = useSelector((state) => state.todo);
-  console.log("fetchedTodo",fetchedTodo);
 
   const handleSubmit = (event) => {
     event.preventDefault();
