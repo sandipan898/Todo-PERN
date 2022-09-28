@@ -1,18 +1,17 @@
 const router = require('express').Router();
 const pool = require('../db');
-const db = require('../models');
-const Todo = db.todos;
-const Op = db.sequalize.Op;
 
 // CREATE
 router.post("/", async (req, res) => {
     const { description } = req.body;
     const date = new Date();
     const currentDate = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
-    
     try{
-        const newTodo = await Todo.create({ description, createdAt: currentDate });
-        res.status(200).json({ success: true, message: "Todo created successfully", todo: newTodo })
+        const newTodo = await pool.query(
+            "INSERT INTO todo(description, createdAt) VALUES($1, $2) RETURNING *", 
+            [description, currentDate]
+        )
+        res.status(200).json({ success: true, message: "Todo created successfully", todo: newTodo.rows[0] })
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -21,8 +20,8 @@ router.post("/", async (req, res) => {
 // READ ALL
 router.get("/", async (req, res) => {
     try {
-        const allTodos = await Todo.findAll();
-        res.status(200).json({ success: true, message: "Todos fetched successfully!", todo: allTodos });
+        const allTodos = await pool.query("SELECT * FROM todo");
+        res.status(200).json({ success: true, message: "Todos fetched successfully!", todo: allTodos.rows});
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -32,9 +31,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const foundTodo = await Todo.findByPk(id);
-        if (!foundTodo) return res.status(404).send({ success: false, message: "Todo not found!" })
-         res.status(200).json({success: true, message: "Todo fetched successfully!", todo: foundTodo });
+        const foundTodo = await pool.query(
+            "SELECT * FROM todo WHERE todo_id=$1", 
+            [id]
+        );
+        res.status(200).json({success: true, message: "Todo fetched successfully!", todo: foundTodo.rows[0]});
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -47,8 +48,11 @@ router.put("/:id", async (req, res) => {
     const date = new Date();
 
     try {
-        const updatedTodo = await Todo.update({description, createdAt: date}, { where: { id }});
-        res.status(200).json({success: true, message: `Todo with id ${updatedTodo} has been updated successfully!` });
+        const updatedTodo = await pool.query(
+            "UPDATE todo SET description=$1 WHERE todo_id=$2 RETURNING *",
+            [description, id]
+        );
+        res.status(200).json({success: true, message: "Todo updated successfully!", todo: updatedTodo.rows[0] });
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
@@ -58,8 +62,11 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const deletedTodo = await Todo.destroy({ where: {id} })
-        res.status(200).json({success: true, message: `Todo with id ${deletedTodo} has been deleted successfully!` })
+        const deletedTodo = await pool.query(
+            "DELETE FROM todo WHERE todo_id=$1 RETURNING *",
+            [id]
+        )
+        res.status(200).json({success: true, message: "Todo deleted successfully!", todo: deletedTodo.rows[0] })
     } catch (error) {
         res.status(400).send({ success: false, message: error.message })
     }
